@@ -31,6 +31,7 @@
         docker-tramp
         docker
         dockerfile-mode
+        emacs-lisp
         ))
 
 ;; List of packages to exclude.
@@ -70,17 +71,39 @@
 (defun chenxuesong/post-init-magit()
   (with-eval-after-load 'magit-popup
     (magit-define-popup-action 'magit-commit-popup
-      ?r "Rbt post -g" 'chenxuesong-review-code-post-g)
+                               ?r "Rbt post -g" 'chenxuesong-review-code-post-g)
     (magit-define-popup-action 'magit-commit-popup
-      ?R "Rbt post -r" 'chenxuesong-review-code-post-r)
+                               ?R "Rbt post -r" 'chenxuesong-review-code-post-r)
     (magit-define-popup-action 'magit-commit-popup
-      ?o "Rbt open" 'chenxuesong-review-code-open)
+                               ?o "Rbt open" 'chenxuesong-review-code-open)
     (magit-define-popup-action 'magit-commit-popup
-      ?d "Rbt diff" 'chenxuesong-review-code-diff)
+                               ?d "Rbt diff" 'chenxuesong-review-code-diff)
     (magit-define-popup-action 'magit-commit-popup
-      ?D "Delete .Ds_Store" 'chenxuesong-delete-ds-store)
+                               ?D "Delete .Ds_Store" 'chenxuesong-delete-ds-store)
     )
   )
+
+
+(defun spacemacs//elisp-nav-ms-documentation ()
+  "[e] for kill & [s] for select. [hjkl] for motion")
+
+
+(defun chenxuesong/post-init-emacs-lisp ()
+  (with-eval-after-load 'lisp-mode
+    (spacemacs|define-micro-state elisp-nav
+      :doc (spacemacs//elisp-nav-ms-documentation)
+      :use-minibuffer t
+      :evil-leader "je"
+      :bindings
+      ("h" backward-up-list)
+      ("j" backward-sexp)
+      ("k" forward-sexp)
+      ("l" forward-list)
+      ("e" kill-sexp)
+      ("s" mark-sexpbackward-up-list)
+      ("q" nil :exit t)
+    )))
+
 
 (defun chenxuesong/init-swiper ()
   "Initialize my package"
@@ -131,7 +154,7 @@
       (setq org-octopress-directory-org-top org-blog-dir)
       (setq org-octopress-directory-org-posts (concat org-blog-dir "blog"))
       (setq org-octopress-setup-file (concat org-blog-dir "setupfile.org"))
- 
+
       (defun chenxuesong/org-save-and-export ()
         (interactive)
         (org-octopress-setup-publish-project)
@@ -236,11 +259,11 @@
             elfeed-search-face-alist)
 
       (setq-default elfeed-search-filter "@2-months-ago +unread ")
-      (spacemacs|evilify-map elfeed-search-mode-map
-        :mode elfeed-search-mode
-        :bindings
-        "G" 'elfeed-update
-        "g" 'elfeed-search-update--force)
+      (evilified-state-evilify-map elfeed-search-mode-map
+                             :mode elfeed-search-mode
+                             :bindings
+                             "G" 'elfeed-update
+                             "g" 'elfeed-search-update--force)
 
       (defun elfeed-export-link ()
         (interactive)
@@ -303,7 +326,7 @@
 
 (defun chenxuesong/post-init-dockerfile-mode ()
   (with-eval-after-load 'dockerfile-mode (evil-leader/set-key-for-mode
-                         'dockerfile-mode "cn" 'chenxuesong-set-image-name)))
+                                           'dockerfile-mode "cn" 'chenxuesong-set-image-name)))
 
 ;; For each package, define a function chenxuesong/init-<package-name>
 ;;

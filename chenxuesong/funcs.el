@@ -99,3 +99,7 @@
                    (message "delete .ds_store")
                    (shell-command-to-string (format "find %s -name \".DS_Store\" -depth -exec rm {} \\;"
                                                     default-directory))))))
+
+
+(defun chenxuesong-print ()
+  (message "chenxuesong"))
