@@ -27,6 +27,10 @@
         ivy-mode
         swiper
         keyfreq
+        web-mode
+        docker-tramp
+        docker
+        dockerfile-mode
         ))
 
 ;; List of packages to exclude.
@@ -73,6 +77,8 @@
       ?o "Rbt open" 'chenxuesong-review-code-open)
     (magit-define-popup-action 'magit-commit-popup
       ?d "Rbt diff" 'chenxuesong-review-code-diff)
+    (magit-define-popup-action 'magit-commit-popup
+      ?D "Delete .Ds_Store" 'chenxuesong-delete-ds-store)
     )
   )
 
@@ -88,7 +94,7 @@
               '("COMMIT_MSG" "COMMIT_EDITMSG" "github.*txt$"
                 ".*png$"))
         (setq recentf-max-saved-items 60))
-      (evilify ivy-occur-mode ivy-occur-mode-map)
+      (evilified-state-evilify ivy-occur-mode ivy-occur-mode-map)
       (use-package ivy
         :defer t
         :config
@@ -153,35 +159,38 @@
       (global-set-key (kbd "C-x w") 'elfeed)
       (setq elfeed-feeds
             '(
-              ("http://nullprogram.com/feed/" emacs blog)
-              ("http://z.caudate.me/rss/" unknown)
-              ("http://tonybai.com/feed/" dev)
+              ;; ("http://nullprogram.com/feed/" emacs blog)
+              ;; ("http://z.caudate.me/rss/" unknown)
+              ;; ("http://tonybai.com/feed/" dev)
               ("http://planet.emacsen.org/atom.xml" emacs)
-              ("http://feeds.feedburner.com/emacsblog" emacs)
-              ("http://blog.binchen.org/rss.xml" emacs blog)
+              ;; ("http://feeds.feedburner.com/emacsblog" emacs)
+              ;; ("http://blog.binchen.org/rss.xml" emacs blog)
               ("http://oremacs.com/atom.xml" emacs)
-              ("http://blog.gemserk.com/feed/" emacs)
-              ("http://t-machine.org/index.php/feed/" dev)
-              ("http://feeds.feedburner.com/ruanyifeng" dev blog)
-              ("http://coolshell.cn/feed" dev)
-              ("http://blog.devtang.com/atom.xml" dev blog)
+              ;; ("http://t-machine.org/index.php/feed/" dev)
+              ;; ("http://feeds.feedburner.com/ruanyifeng" dev blog)
+              ;; ("http://blog.devtang.com/atom.xml" dev blog)
               ("http://emacsist.com/rss" emacs)
-              ("http://puntoblogspot.blogspot.com/feeds/2507074905876002529/comments/default" dev)
+              ;; ("http://puntoblogspot.blogspot.com/feeds/2507074905876002529/comments/default" dev)
               ("http://xahlee.info/comp/blog.xml" emacs blog)
-              ("http://www.matrix67.com/blog/feed" dev blog)
-              ;; "http://feeds2.feedburner.com/cnbeta_full"
-              ("http://feeds.feedburner.com/hacker-news-feed-200" news)
-              ;; "http://feeds.feedburner.com/zhihu-daily"
-              ("http://www.udpwork.com/feed" dev blog)
-              ("http://www.reactnative.com/rss/" dev)
-              ;; "http://www.zhihu.com/rss"
-              ("http://ergoemacs.org/emacs/blog.xml" emacs)
+              ;; ("http://www.matrix67.com/blog/feed" dev blog)
+              ;; ("http://www.udpwork.com/feed" dev blog)
+              ;; ("http://ergoemacs.org/emacs/blog.xml" emacs)
+              ("https://www.reddit.com/r/Android/.rss" android)
+              ("http://feeds.feedburner.com/androidcentral" android)
+              ("https://www.reddit.com/r/geek/.rss" news)
+              ("https://www.reddit.com/r/reactnative/.rss" dev)
               ("http://www.36kr.com/feed" news)
-              ("http://feeds2.feedburner.com/programthink" dev)
-              ("http://code.tutsplus.com/posts.atom" dev)
-              ("http://www.infoworld.com/blog/open-sources/index.rss" news)
-              ("http://www.infoworld.com/category/application-development/index.rss" news)
-              ("http://www.itworld.com/news/index.rss" news))
+              ("http://feeds.feedburner.com/nczonline/" blog)
+
+              ;; ("http://code.tutsplus.com/posts.atom" dev)
+              ;; ("http://www.infoworld.com/blog/open-sources/index.rss" news)
+              ;; ("http://www.infoworld.com/category/application-development/index.rss" news)
+              ;; ("http://www.itworld.com/news/index.rss" news)
+
+              ;; ("http://feeds2.feedburner.com/programthink" dev)
+              ;; ("http://feeds.feedburner.com/hacker-news-feed-200" news)
+              ;; ("http://www.reactnative.com/rss/" dev)
+              )
             )
 
       ;; (evilify elfeed-search-mode elfeed-search-mode-map)
@@ -208,6 +217,14 @@
         :group 'elfeed)
 
       (push '(news elfeed-news)
+            elfeed-search-face-alist)
+
+      (defface elfeed-android
+        '((t :foreground "#008080"))
+        "Marks News in Elfeed."
+        :group 'elfeed)
+
+      (push '(android elfeed-android)
             elfeed-search-face-alist)
 
       (defface elfeed-unread
@@ -261,21 +278,32 @@
     )
   )
 
-(defun custom-persp/agenda ()
-  (interactive)
-  (custom-persp "agenda"
-                (progn
-                  (find-file "~/org/work.org")
-                  )))
+(defun chenxuesong/post-init-web-mode ()
+  (add-to-list 'auto-mode-alist '("\\.ios.js\\'" . react-mode))
+  (add-to-list 'auto-mode-alist '("\\.android.js\\'" . react-mode))
+  )
 
-(defun custom-persp/learn-xahlee-blog ()
-  (interactive)
-  (custom-persp "ewwxahlee"
-                (progn
-                  (eww-open-file "~/Work/Emacs/Document/xahemacs20150606/xah_emacs_tutorial/index.html")
-                  )))
+(defun chenxuesong/init-docker ()
+  (use-package docker
+    :defer
+    :config
+    (progn
+      )
+    )
+  )
 
+(defun chenxuesong/init-docker-tramp ()
+  (use-package docker-tramp
+    :defer
+    :config
+    (progn
+      )
+    )
+  )
 
+(defun chenxuesong/post-init-dockerfile-mode ()
+  (with-eval-after-load 'dockerfile-mode (evil-leader/set-key-for-mode
+                         'dockerfile-mode "cn" 'chenxuesong-set-image-name)))
 
 ;; For each package, define a function chenxuesong/init-<package-name>
 ;;
